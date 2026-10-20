@@ -1,0 +1,1 @@
+{"name":"thread-voice-browser-checks","private":true,"type":"module","scripts":{"test":"node tests/audio.test.mjs"}}

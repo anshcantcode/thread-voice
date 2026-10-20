@@ -1,0 +1,17 @@
+name: Bug report
+description: Reproduce a runtime, audio, or workspace problem.
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction and expected behavior
+      description: Include version, OS, browser, exact steps, and whether this used the lab or live voice. Keep credentials and private notes out.
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: Include a redacted event trace when useful. Distinguish spoken claims from actual saved outcomes.
+    validations:
+      required: true

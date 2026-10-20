@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thread-voice"
+version = "0.1.0"
+description = "An inspectable voice workspace with interruptible tools and explicit write confirmation."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Ansh"}]
+dependencies = [
+  "fastapi>=0.115,<1",
+  "pydantic>=2.9,<3",
+  "uvicorn>=0.34,<1",
+  "websockets>=15,<18",
+  "python-dotenv>=1,<2",
+]
+
+[project.optional-dependencies]
+dev = ["httpx>=0.28,<1", "build>=1.2,<2"]
+
+[project.scripts]
+thread-voice = "thread_voice.cli:main"
+
+[project.urls]
+Repository = "https://github.com/anshcantcode/thread-voice"
+Issues = "https://github.com/anshcantcode/thread-voice/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+thread_voice = ["web/*"]
