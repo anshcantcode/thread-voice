@@ -23,7 +23,8 @@ for command in commands:
 wheel = max((ROOT / "dist").glob("*.whl"), key=lambda path: path.stat().st_mtime)
 with zipfile.ZipFile(wheel) as package:
     names = package.namelist()
-    for asset in ("index.html", "style.css", "app.js", "audio.js", "capture-worklet.js", "mark.svg"):
+    for asset in ("index.html", "style.css", "app.js", "audio.js", "capture-worklet.js", "mark.svg", "galaxy.css", "workspace.css", "integration.css", "orb.js", "fonts/Manrope.ttf", "fonts/Manrope-OFL.txt", "fonts/Newsreader-OFL.txt", "images/thread-sphere.png"):
         assert "thread_voice/web/" + asset in names, f"Missing packaged asset: {asset}"
     assert not any(name.endswith((".env", ".sqlite3")) for name in names)
+    assert any(name.endswith("/THIRD_PARTY_NOTICES.md") for name in names), "Restored frontend notices must ship in the wheel"
 print("Verified backend, browser audio, wheel build, and packaged web assets.")

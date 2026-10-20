@@ -29,8 +29,9 @@ class ServerTests(unittest.TestCase):
 
     def test_http_surface_and_packaged_static_assets(self):
         self.assertEqual(self.client.get("/healthz").json()["status"], "ok")
-        self.assertIn("Room to change your mind", self.client.get("/").text)
-        for name in ("app.js", "audio.js", "style.css", "capture-worklet.js", "mark.svg"):
+        self.assertIn("Your day, in conversation.", self.client.get("/").text)
+        self.assertIn('id="thread-canvas"', self.client.get("/").text)
+        for name in ("app.js", "audio.js", "style.css", "galaxy.css", "workspace.css", "integration.css", "orb.js", "capture-worklet.js", "mark.svg", "fonts/Manrope.ttf", "fonts/Manrope-OFL.txt", "images/thread-sphere.png"):
             self.assertEqual(self.client.get("/static/" + name).status_code, 200)
         self.assertIn("frame-ancestors 'none'", self.client.get("/").headers["content-security-policy"])
 

@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "thread-voice"
-version = "0.1.0"
+version = "0.1.1"
 description = "An inspectable voice workspace with interruptible tools and explicit write confirmation."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
 authors = [{name = "Ansh"}]
 dependencies = [
   "fastapi>=0.115,<1",
@@ -32,4 +33,4 @@ Issues = "https://github.com/anshcantcode/thread-voice/issues"
 where = ["src"]
 
 [tool.setuptools.package-data]
-thread_voice = ["web/*"]
+thread_voice = ["web/*", "web/fonts/*", "web/images/*"]

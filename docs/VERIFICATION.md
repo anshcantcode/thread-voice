@@ -1,4 +1,4 @@
-# Verification — v0.1.0
+# Verification — v0.1.1
 
 Recorded on **20 October 2026**. This record concerns the independently implemented THREAD Voice source, not the predecessor's benchmark or mobile releases.
 
@@ -7,7 +7,7 @@ Recorded on **20 October 2026**. This record concerns the independently implemen
 | `python -m unittest discover -s tests -v` | **29 passed**, Windows, Python 3.13 |
 | `node tests/audio.test.mjs` | Passed on Node 22.16.0: 16/44.1/48 kHz frame conversion, owned playback cancellation, queue bounds, microphone permission/stop race |
 | `python -m build --wheel` | Universal Python wheel produced |
-| Wheel-content validation | All six web assets included; no environment file or notebook database included |
+| Wheel-content validation | Restored styles, orb renderer, sphere image, fonts, font licenses and frontend notices included; no environment file or notebook database included |
 | Browser scenario | Actual local runtime accepted scripted inputs, cancelled obsolete search, published current results, and prepared an unsaved draft |
 | Browser save and interruption | Save created a SQLite receipt; a later interruption expired a fresh draft and removed the save control |
 | Persistence across restart | Saved notebook entry remained readable after restarting the server and reconnecting the browser |

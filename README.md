@@ -7,7 +7,7 @@ A user says “search for interruption handling,” then changes their mind befo
 
 THREAD makes those boundaries visible. It pairs an optional live voice connection with a local controller, a reference-document search, a note workspace, and an exportable event timeline. The model can prepare a draft. Only the user can confirm its save.
 
-**Status: v0.1.0, an early developer release for one local user.** The lab works without a model or API key. Gemini Live is an optional adapter; its protocol is tested with a fake upstream. This release has not been qualified with a paid live session or a physical microphone-to-speaker latency measurement. See [verification](docs/VERIFICATION.md).
+**Status: v0.1.1, an early developer release for one local user.** The lab works without a model or API key. Gemini Live is an optional adapter; its protocol is tested with a fake upstream. This release has not been qualified with a paid live session or a physical microphone-to-speaker latency measurement. See [verification](docs/VERIFICATION.md).
 
 ## Try it locally
 
@@ -33,11 +33,11 @@ python -m pip install -e .
 thread-voice
 ```
 
-Open **http://127.0.0.1:8766** and select **Run interruption scenario**. A deliberately delayed local search starts, a scripted correction cancels it, a new lookup finishes, and a draft appears. Review it, then select **Save note** to create a real local SQLite record. The timeline shows each transition. **Interrupt** retires pending work and expires an unsaved draft. A committed save keeps its receipt.
+Open **http://127.0.0.1:8766** and select **A change of plan**. A deliberately delayed local search starts, a scripted correction cancels it, a new lookup finishes, and a draft appears. Review it, then select **Save note** to create a real local SQLite record. The timeline shows each transition. **Interrupt** retires pending work and expires an unsaved draft. A committed save keeps its receipt.
 
 You can also search the bundled engineering notes or prepare your own note with **Draft a note**. The lab does not interpret arbitrary natural-language tasks; its search ranks six reference documents by keyword. The scenario scripts the inputs, not the controller outcomes. It requests no microphone permission and makes no inference request.
 
-<p align="center"><img src="docs/workspace.png" alt="THREAD Voice workspace showing the conversation, local search results, note draft, and event timeline" width="1200"></p>
+<p align="center"><img src="docs/workspace.png" alt="Restored THREAD interface with the blue acoustic orb, full-screen conversation, compact call dock and dark workspace" width="1200"></p>
 
 ## Optional live voice
 
@@ -99,6 +99,6 @@ Notes default to `~/.thread-voice/notes.sqlite3`; override with `THREAD_DATA_DIR
 
 ## Project origin and ownership
 
-Maintained by [Ansh / @anshcantcode](https://github.com/anshcantcode). This is an independently implemented successor to the team's [THREAD hackathon prototype](https://github.com/anshcantcode/thread-team-guide), with a smaller developer-facing scope. The earlier team's source, assets, submission materials, benchmark scores, and contributor authorship are not republished or claimed as this release's work. See [provenance](ORIGINS.md).
+Maintained by [Ansh / @anshcantcode](https://github.com/anshcantcode). This pairs a new runtime with the original frontend from the team's [THREAD hackathon prototype](https://github.com/anshcantcode/thread-team-guide): its blue acoustic orb, full-screen conversation, typography and dark workspace are preserved. The inherited frontend is credited in [provenance](ORIGINS.md); the predecessor's benchmark scores and submission materials do not transfer to this implementation.
 
-The current source is MIT licensed. Contributions are welcome through pull requests; write access is maintained by Ansh.
+The runtime and new integration code are MIT licensed. The restored THREAD frontend and bundled font provenance are recorded in [third-party notices](THIRD_PARTY_NOTICES.md). Contributions are welcome through pull requests; write access is maintained by Ansh.

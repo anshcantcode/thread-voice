@@ -1,47 +1,80 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>THREAD Voice — Room to change your mind</title>
-  <meta name="description" content="An open-source voice workspace with interruptible tools, visible event traces, and explicit confirmation before persistent actions.">
-  <meta name="theme-color" content="#111817">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>THREAD · A live conversation</title>
+  <meta name="description" content="A conversation with room to change your mind. Interrupt, correct the request, and keep the thread.">
+  <meta name="theme-color" content="#080d14">
   <link rel="icon" href="/static/mark.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/workspace.css">
+  <link rel="stylesheet" href="/static/galaxy.css">
+  <link rel="stylesheet" href="/static/integration.css">
   <script type="module" src="/static/app.js"></script>
 </head>
-<body>
-  <header class="topbar">
-    <a class="brand" href="/"><img src="/static/mark.svg" alt="" width="28" height="28"><strong>THREAD</strong><span>VOICE</span></a>
-    <div class="toplinks"><span class="version">v0.1.0 · local workspace</span><a href="https://github.com/anshcantcode/thread-voice" target="_blank" rel="noopener noreferrer">Source code <span aria-hidden="true">↗</span></a></div>
-  </header>
-  <main>
-    <div class="intro"><div><p class="eyebrow">OPEN SOURCE / CONVERSATIONAL SYSTEMS</p><h1>Room to change your mind.</h1><p class="lede">Speak, interrupt, take a different direction. Keep the work that still matters.</p></div><div class="session-status"><span class="dot" id="connection-dot"></span><span id="connection">Connecting to local runtime…</span><button id="reconnect" class="text-button" hidden>Reconnect</button></div></div>
-    <div class="workspace">
-      <aside class="guide panel">
-        <p class="eyebrow">01 / EXPLORE</p>
-        <h2>Start with an interruption.</h2>
-        <p>A short, scripted scenario runs through the actual controller. Watch a correction cancel the old search and produce a fresh draft.</p>
-        <button class="primary" id="demo" disabled>Run interruption scenario <span aria-hidden="true">↗</span></button>
-        <p class="fine">No key. No microphone. No model inference.</p>
-        <div class="divider"></div>
-        <p class="eyebrow">THE CONTRACT</p>
-        <ol class="contract"><li><span>01</span>Interrupt the output.</li><li><span>02</span>Retire obsolete work.</li><li><span>03</span>Review before saving.</li><li><span>04</span>Keep the actual receipt.</li></ol>
-        <details><summary>What is running?</summary><p>Python owns revision checks, cancellation and local SQLite writes. This page owns audio playback. The optional Gemini Live connection handles speech and model reasoning.</p><p>The scenario uses scripted input and a delayed search of six bundled engineering documents. It does not measure model understanding.</p></details>
-      </aside>
-      <section class="conversation panel" aria-labelledby="conversation-title">
-        <div class="panel-top"><p class="eyebrow">02 / CONVERSATION</p><span class="pill" id="mode">LOCAL LAB</span></div>
-        <div class="voice-focus"><div class="signal" id="signal" aria-hidden="true"><div class="signal-core"></div><i></i><i></i><i></i></div><p class="eyebrow" id="activity">READY WHEN YOU ARE</p><h2 id="conversation-title">You can cut in.</h2><p id="conversation-copy">Try the scenario, or search the engineering notes below.</p></div>
-        <div id="captions" class="captions" role="log" aria-label="Live transcript" aria-live="polite"></div>
-        <div class="voice-controls"><button id="live" class="secondary" disabled>Connect live voice</button><button id="interrupt" class="interrupt" disabled>Interrupt <span aria-hidden="true">↙</span></button><button id="disconnect" class="text-button" hidden>Disconnect</button></div>
-        <p class="fine voice-privacy" id="voice-info">Live voice is optional. Set a server-side Gemini key to enable it.</p>
-        <form id="composer"><label class="sr-only" for="message">Search local engineering notes</label><input id="message" maxlength="500" placeholder="Search notes: cancellation, revisions, privacy…" required autocomplete="off"><button type="submit" id="send" aria-label="Send request" disabled>↑</button></form>
-      </section>
-      <section class="results panel" aria-labelledby="results-title"><div class="panel-top"><p class="eyebrow">03 / WORKSPACE</p><button id="new-note" class="text-button" disabled>+ Draft a note</button></div><h2 id="results-title">Keep something useful.</h2><button id="notebook" class="text-button" disabled>Open saved notebook ↗</button><div id="result-list"><div class="empty-state"><span class="paper-icon" aria-hidden="true">≡</span><p>Results appear here.<br><span>Corrections can change the search.<br>Only confirmation can save a note.</span></p></div></div><div id="draft" hidden></div><div id="receipts" aria-live="polite"></div></section>
-    </div>
-    <section class="timeline panel" aria-labelledby="timeline-title"><div class="timeline-heading"><div><p class="eyebrow">UNDER THE CONVERSATION</p><h2 id="timeline-title">A runtime you can inspect.</h2></div><div class="timeline-tools"><span class="revision" id="revision">REV 0</span><button id="export" class="secondary" disabled>Export trace ↓</button></div></div><div class="trace-table"><table><thead><tr><th scope="col">Elapsed</th><th scope="col">Event</th><th scope="col">What happened</th><th scope="col">Revision</th></tr></thead><tbody id="events"></tbody></table></div><p class="fine">Elapsed time is relative to this connection. Traces contain text and receipts, never raw microphone audio. Export the latest 500 events.</p></section>
-    <p class="notice" id="notice" role="status" hidden></p>
+<body data-voice-state="idle" data-connected="false">
+<svg class="symbol-library" aria-hidden="true"><defs>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="13" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></symbol>
+  <symbol id="i-mute" viewBox="0 0 24 24"><path d="m3 3 18 18M9 9v3a3 3 0 0 0 5 2M9 5a3 3 0 0 1 6 0v5M5 10v2a7 7 0 0 0 12 5m2-5v-2M12 19v3m-4 0h8"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M6 9h.1m4 0h.1m4 0h.1m4 0h.1M6 12h.1m4 0h.1m4 0h.1m4 0h.1M7 15h10"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M3 15v-4c0-6 18-6 18 0v4h-5v-4a13 13 0 0 0-8 0v4Z"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><path d="m9 3 1-1h4l1 3 3 1 3 2-1 3v2l1 3-3 2-3 1-1 3h-4l-1-3-3-1-3-2 1-3v-2L3 8l3-2 3-1Z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-transcript" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6m-6 4h6m-6 4h4"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+</defs></svg>
+<div class="studio">
+  <main class="voice-stage" aria-label="Voice conversation">
+    <header class="stage-header">
+      <a class="brand" href="/" aria-label="THREAD home"><span>THREAD</span></a>
+      <div class="connection-status"><span class="status-dot" id="connection-dot"></span><span id="connection">Ready when you are</span><button id="reconnect" class="text-button" hidden>Reconnect</button></div>
+      <button class="icon-button settings-button" data-open="settings-dialog" aria-label="Open conversation settings" title="Settings"><svg><use href="#i-settings"/></svg></button>
+    </header>
+    <section class="conversation-focus">
+      <div class="stage-kicker" id="activity">A LITTLE SPACE TO THINK OUT LOUD</div>
+      <h1 id="conversation-title">Go on.</h1>
+      <p class="stage-subtitle" id="conversation-copy">Your day, in conversation.</p>
+      <div class="thread-visual" id="signal" aria-hidden="true"><canvas id="thread-canvas"></canvas></div>
+      <div class="live-caption" id="live-caption" aria-live="off"><span class="caption-speaker" id="caption-speaker"></span><p id="caption-text"></p></div>
+    </section>
+    <section class="call-controls" aria-label="Conversation controls">
+      <form id="composer" class="composer" hidden><label class="sr-only" for="message">Say it in writing</label><textarea id="message" rows="1" maxlength="500" placeholder="Say it in writing…" required></textarea><button class="send-text" id="send" type="submit" aria-label="Send request" disabled><svg><use href="#i-arrow"/></svg></button></form>
+      <div class="control-dock" id="control-dock">
+        <button id="live" class="mic-button" aria-label="Start voice conversation" title="Start talking" disabled><svg id="mic-icon"><use href="#i-mic"/></svg><span>Start talking</span></button>
+        <span class="dock-rule"></span>
+        <button id="keyboard" class="dock-button" aria-label="Open keyboard" title="Type instead" aria-expanded="false"><svg><use href="#i-keyboard"/></svg></button>
+        <button id="interrupt" class="dock-button interrupt-button" aria-label="Interrupt" title="Interrupt and hold pending work" disabled><svg><use href="#i-stop"/></svg></button>
+        <button id="disconnect" class="dock-button end-call" aria-label="End voice conversation" title="End conversation" hidden><svg><use href="#i-phone"/></svg></button>
+      </div>
+      <p class="call-note" id="call-note">Your microphone turns on when you start.</p>
+    </section>
   </main>
-  <footer><span>THREAD Voice <span class="muted">/</span> Built for a conversation that changes.</span><span>Maintained by <a href="https://github.com/anshcantcode" target="_blank" rel="noopener noreferrer">Ansh</a> · MIT</span></footer>
-  <dialog id="note-dialog"><form id="note-form"><div class="dialog-heading"><div><p class="eyebrow">A PLACE TO START</p><h2>Prepare a note.</h2></div><button type="button" id="close-note" class="text-button" aria-label="Close note editor">✕</button></div><label for="note-title">Title</label><input id="note-title" maxlength="160" required><label for="note-content">Content</label><textarea id="note-content" rows="6" maxlength="8000" required></textarea><p class="fine">This creates a draft. You will review it before anything is saved.</p><button class="primary" type="submit">Prepare draft</button></form></dialog>
+  <aside class="context-rail" aria-label="Your workspace">
+    <header class="context-header"><div><span class="eyebrow">YOUR WORKSPACE</span><small>A little order for your thoughts.</small></div><button id="new-note" class="icon-button" aria-label="Draft a note" title="Draft a note" disabled>＋</button></header>
+    <div class="context-scroll">
+      <section class="empty-context" id="empty-context">
+        <h2>Your results.<br>In one place.</h2><p>Notes, ideas, and the details worth keeping.<br>Keep talking while they take shape.</p>
+        <div class="suggestion-grid">
+          <button id="demo" disabled><span>↗</span><b>A change of plan</b><small>Try an interruption</small></button>
+          <button data-query="interrupting spoken replies"><span>⌁</span><b>Keep the conversation</b><small>Explore voice interruptions</small></button>
+          <button data-query="confirmation receipts"><span>＋</span><b>Before you commit</b><small>How a draft becomes a saved note</small></button>
+          <button data-query="privacy"><span>↗</span><b>A little peace of mind</b><small>Where your voice goes</small></button>
+        </div>
+        <p class="demo-note">The interruption example runs locally with scripted input. Reference search uses bundled notes. Live conversation uses your configured voice model.</p>
+      </section>
+      <section id="work-section" hidden><div class="section-label"><span class="eyebrow" id="mode">YOUR RESULTS</span><button id="back-home" class="text-button">All ideas ↗</button></div><div id="result-list"></div></section>
+      <div id="draft" hidden></div><div id="receipts" aria-live="polite"></div>
+    </div>
+    <div class="workspace-links"><button id="notebook" class="text-button" disabled>My notebook ↗</button><button class="text-button" data-open="inspector">View task record ↗</button></div>
+    <footer class="context-footer"><button class="transcript-toggle" data-open="transcript-dialog"><svg><use href="#i-transcript"/></svg><span>Recent words</span><span class="transcript-count" id="transcript-count">0</span></button><button id="export" class="icon-button" aria-label="Export trace" title="Download session" disabled><svg><use href="#i-download"/></svg></button></footer>
+  </aside>
+</div>
+<dialog id="settings-dialog" class="settings-dialog"><div class="dialog-header"><div><span class="eyebrow">MAKE YOURSELF COMFORTABLE</span><h2>Your conversation.</h2></div><button class="icon-button" data-close="settings-dialog" aria-label="Close settings"><svg><use href="#i-close"/></svg></button></div><div class="settings-body"><div class="setting-row"><span><b>Voice connection</b><small id="live-model">Gemini Live · Native audio</small></span><span id="live-health">Not connected</span></div><label class="setting-row" for="vad-threshold"><span><b>Microphone sensitivity</b><small>Lower the threshold for quieter speech.</small></span><input id="vad-threshold" type="range" min="0.008" max="0.06" step="0.001" value="0.035"></label><p class="settings-footnote" id="setup-info">Set <code>GEMINI_API_KEY</code> in the server's <code>.env</code> file, then restart THREAD to enable live voice. <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">Create a Gemini key ↗</a>.</p><p class="privacy" id="voice-info">Live mode sends your microphone and messages to Google Gemini. Provider charges may apply. Headphones recommended.</p><div class="settings-links"><span>THREAD Voice <span id="version">v0.1.1</span></span><a href="https://github.com/anshcantcode/thread-voice" target="_blank" rel="noopener noreferrer">Open source ↗</a></div></div></dialog>
+<dialog id="transcript-dialog" class="drawer"><div class="dialog-header"><div><span class="eyebrow">THE CONVERSATION</span><h2>Recent words.</h2></div><button class="icon-button" data-close="transcript-dialog" aria-label="Close transcript"><svg><use href="#i-close"/></svg></button></div><div id="captions" class="transcript-messages" role="log" aria-label="Live transcript"></div><div class="drawer-footer"><span>Live captions can miss a word.</span><button class="text-button" id="transcript-inspect">View task record ↗</button></div></dialog>
+<dialog id="inspector" class="inspector"><div class="dialog-header"><div><span class="eyebrow">THE TASK RECORD</span><h2>What happened.</h2></div><button class="icon-button" data-close="inspector" aria-label="Close task record"><svg><use href="#i-close"/></svg></button></div><div class="inspector-body"><div class="record-heading"><span id="revision" class="revision">REV 0</span><span class="record-note">Latest 100 events · elapsed time within this session</span></div><div class="trace-table"><table><thead><tr><th scope="col">Elapsed</th><th scope="col">Event</th><th scope="col">What happened</th><th scope="col">Revision</th></tr></thead><tbody id="events"></tbody></table></div><p class="record-note">The scripted example exercises actual cancellation and revision checks. Traces include text and receipts, never raw microphone audio.</p></div></dialog>
+<dialog id="note-dialog" class="settings-dialog"><form id="note-form"><div class="dialog-header"><div><span class="eyebrow">A PLACE TO START</span><h2>Prepare a note.</h2></div><button type="button" class="icon-button" id="close-note" aria-label="Close note editor"><svg><use href="#i-close"/></svg></button></div><div class="settings-body note-editor"><label for="note-title">Title</label><input id="note-title" maxlength="160" required><label for="note-content">Content</label><textarea id="note-content" rows="6" maxlength="8000" required></textarea><p class="settings-footnote">This prepares a draft. You’ll review it before anything is saved.</p><button class="primary-button" type="submit">Prepare draft</button></div></form></dialog>
+<div class="toast" id="toast" role="status" hidden><span id="notice"></span><button id="toast-close" aria-label="Dismiss notification">×</button></div>
 </body>
 </html>
