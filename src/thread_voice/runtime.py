@@ -28,7 +28,9 @@ async def search_documents(query: str) -> list[dict]:
     # A visible delay makes cancellation observable; this is an in-process search.
     await asyncio.sleep(1.2)
     words = set(query.casefold().split())
-    ranked = sorted(DOCUMENTS, key=lambda doc: -sum(word in (doc["title"] + " " + doc["text"]).casefold() for word in words))
+    def score(doc):
+        return sum(word in (doc["title"] + " " + doc["text"]).casefold() for word in words)
+    ranked = sorted((doc for doc in DOCUMENTS if score(doc)), key=lambda doc: -score(doc))
     return [dict(doc) for doc in ranked[:3]]
 
 
@@ -64,6 +66,8 @@ class Runtime:
         self.emit("revision.changed", reason=reason)
 
     def interrupt(self, reason="user interruption"):
+        if self.demo_task and self.demo_task is not asyncio.current_task():
+            self.demo_task.cancel()
         self.advance(reason)
         self.emit("playback.clear", reason=reason)
 
@@ -130,7 +134,8 @@ class Runtime:
         self.lookup("interrupting a spoken reply")
         await asyncio.sleep(.35)
         self.interrupt("scripted correction")
-        await self.lookup("rejecting stale tool results")
+        # Keep parent cancellation from being swallowed by a read's cleanup handler.
+        await asyncio.shield(self.lookup("rejecting stale tool results"))
         self.prepare_note("Interruption design", "Cancel obsolete reads, fence late results by revision, and require confirmation before a persistent write.")
         self.emit("demo.finished", message="Correction applied. A draft is ready for your explicit confirmation.")
 

@@ -4,7 +4,7 @@ Recorded on **20 October 2026**. This record concerns the independently implemen
 
 | Check | Observed result |
 |---|---|
-| `python -m unittest discover -s tests -v` | **27 passed**, Windows, Python 3.13 |
+| `python -m unittest discover -s tests -v` | **29 passed**, Windows, Python 3.13 |
 | `node tests/audio.test.mjs` | Passed on Node 22.16.0: 16/44.1/48 kHz frame conversion, owned playback cancellation, queue bounds, microphone permission/stop race |
 | `python -m build --wheel` | Universal Python wheel produced |
 | Wheel-content validation | All six web assets included; no environment file or notebook database included |
@@ -22,6 +22,8 @@ The adversarial read catches cancellation and returns late. Its result is exclud
 Provider tests use an in-memory WebSocket fake. They check setup, tool boundaries, PCM forwarding, transcript-safe logging, playback suppression across turn boundaries, draft expiration and connection cleanup. They make no Google requests. The browser walkthrough uses the local lab and a synthetic note, not an actual microphone or paid model.
 
 The initial local verification exposed SQLite handles left open by transaction-only context managers on Windows. Explicit connection closing fixed the defect. A malformed three-byte synthetic PCM fixture was corrected to an even-length valid sample; the invalid-frame regression remains in the suite. These were repaired before publication.
+
+Final review also added a regression for user interruption while the scripted scenario awaits a cancellable read. Shielding the scenario's await prevents a child's cancellation handler from swallowing parent cancellation and preparing a draft after the user has interrupted.
 
 ## Unqualified or not run
 

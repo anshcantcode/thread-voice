@@ -5,7 +5,7 @@ import sqlite3
 import tempfile
 import unittest
 
-from thread_voice.runtime import Runtime
+from thread_voice.runtime import Runtime, search_documents
 from thread_voice.storage import Notebook
 
 
@@ -132,3 +132,17 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("draft.prepared", self.kinds())
         self.assertIn("demo.finished", self.kinds())
         self.assertFalse(self.path.exists())
+
+    async def test_user_interrupt_during_demo_cannot_prepare_a_ghost_draft(self):
+        self.runtime.run_demo()
+        async with asyncio.timeout(2):
+            while sum(event["type"] == "search.started" for event in self.events) < 2:
+                await asyncio.sleep(.005)
+        self.runtime.interrupt("real user correction")
+        await asyncio.gather(self.runtime.demo_task, return_exceptions=True)
+        await asyncio.gather(*list(self.runtime.tasks), return_exceptions=True)
+        self.assertNotIn("draft.prepared", self.kinds())
+        self.assertNotIn("demo.finished", self.kinds())
+
+    async def test_search_does_not_invent_matches_for_unknown_keywords(self):
+        self.assertEqual(await search_documents("xyzzy-unmatched-741"), [])
